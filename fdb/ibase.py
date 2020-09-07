@@ -1355,7 +1355,7 @@ class fbclient_API(object):
             # Next elif is necessary hotfix for ctypes issue
             # http://bugs.python.org/issue16283
             elif sys.platform == 'win32':
-                fb_library_name = find_library('fbclient.dll')
+                fb_library_name = find_library('gds32.dll')
                 if not fb_library_name:
                     # let's try windows registry
                     if PYTHON_MAJOR_VER == 3:
@@ -1369,8 +1369,23 @@ class fbclient_API(object):
                     if not key:
                         key = get_key(winreg.HKEY_LOCAL_MACHINE,
                                       'SOFTWARE\\Wow6432Node\\Firebird Project\\Firebird Server\\Instances')
+                    if not key:
+                        key = get_key(winreg.HKEY_LOCAL_MACHNE,
+                                      'SOFTWARE\\Embarcadero\\InterBase\\Servers')
+                    if not key:
+                        key = get_key(winreg.HKEY_LOCAL_MACHNE,
+                                      'SOFTWARE\\Wow6432Node\\Embarcadero\\InterBase\\Servers')
+
+                    if not key:
+                        key = get_key(winreg.HKEY_LOCAL_MACHNE,
+                                      'SOFTWARE\\Borland\\InterBase\\Servers\\gds_db')
+                    if not key:
+                        key = get_key(winreg.HKEY_LOCAL_MACHNE,
+                                      'SOFTWARE\\Wow6432Node\\Borland\\InterBase\\Servers\\gds_db')
                     if key:
                         instFold = winreg.QueryValueEx(key, 'DefaultInstance')
+                        if not instFold:
+                            instFold = winreg.QueryValueEx(key, 'RootDirectory')
                         fb_library_name = os.path.join(os.path.join(instFold[0], 'bin'), 'fbclient.dll')
             else:
                 fb_library_name = find_library('fbclient')
@@ -1685,9 +1700,9 @@ class fbclient_API(object):
         self.isc_interprete.restype = ISC_LONG
         self.isc_interprete.argtypes = [STRING, POINTER(POINTER(ISC_STATUS))]
         #: fb_interpret(STRING, c_uint, POINTER(POINTER(ISC_STATUS)))
-        self.fb_interpret = fb_library.fb_interpret
-        self.fb_interpret.restype = ISC_LONG
-        self.fb_interpret.argtypes = [STRING, c_uint, POINTER(POINTER(ISC_STATUS))]
+        #self.fb_interpret = fb_library.fb_interpret
+        #self.fb_interpret.restype = ISC_LONG
+        #self.fb_interpret.argtypes = [STRING, c_uint, POINTER(POINTER(ISC_STATUS))]
         #: isc_open_blob(POINTER(ISC_STATUS), POINTER(isc_db_handle), POINTER(isc_tr_handle), POINTER(isc_blob_handle), POINTER(ISC_QUAD))
         self.isc_open_blob = fb_library.isc_open_blob
         self.isc_open_blob.restype = ISC_STATUS

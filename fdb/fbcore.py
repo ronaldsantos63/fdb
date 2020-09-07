@@ -598,7 +598,8 @@ def exception_from_status(error, status, preamble=None):
     pvector = ctypes.cast(ctypes.addressof(status), ISC_STATUS_PTR)
 
     while True:
-        result = api.fb_interpret(msg, 512, pvector)
+        #result = api.fb_interpret(msg, 512, pvector)
+        result = api.isc_interprete(msg, pvector)
         if result != 0:
             if PYTHON_MAJOR_VER == 3:
                 msglist.append('- ' + (msg.value).decode(sys_encoding))
@@ -1109,7 +1110,8 @@ class Connection(object):
         self.__ic = self.query_transaction.cursor()
         self.__ic._set_as_internal()
         # Get Firebird engine version
-        verstr = self.db_info(isc_info_firebird_version)
+        # verstr = self.db_info(isc_info_firebird_version)
+        verstr = self.db_info(isc_info_version)
         x = verstr.split()
         if x[0].find('V') > 0:
             (x, self.__version) = x[0].split('V')
@@ -1173,7 +1175,7 @@ class Connection(object):
     def __get_server_version(self):
         return self.db_info(isc_info_version)
     def __get_firebird_version(self):
-        return self.db_info(isc_info_firebird_version)
+        return self.db_info(isc_info_version)
     def __get_version(self):
         return self.__version
     def __get_engine_version(self):
